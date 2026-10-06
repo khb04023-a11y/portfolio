@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>김한별 | 포트폴리오</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --line: #d8dee4; --accent: #1a5fb4; --accent-soft: #e7f0fb;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1216; --card: #171b21; --text: #e6edf3; --muted: #9aa4af;
+    --line: #2d333b; --accent: #6ea8fe; --accent-soft: #1c2a3d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--card);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    max-width: 960px; margin: 0 auto; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .bar strong { margin-right: auto; }
+  nav a {
+    color: var(--muted); text-decoration: none; padding: 4px 8px; border-radius: 6px;
+  }
+  nav a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+  button {
+    font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--card);
+    color: var(--text); padding: 5px 10px; border-radius: 6px;
+  }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+  section { margin-bottom: 40px; scroll-margin-top: 70px; }
+  h2 { font-size: 1.2rem; border-left: 4px solid var(--accent); padding-left: 10px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px;
+  }
+  .profile { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start; }
+  .profile h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  .muted { color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
+  .stat { border: 1px solid var(--line); border-radius: 8px; padding: 10px; text-align: center; }
+  .stat b { display: block; font-size: 1.4rem; color: var(--accent); }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tools input {
+    flex: 1; min-width: 180px; font: inherit; padding: 6px 10px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--card); color: var(--text);
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); }
+  th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; }
+  .tag {
+    display: inline-block; font-size: 0.8rem; padding: 1px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .timeline h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .timeline ul { margin: 8px 0 0; padding-left: 18px; }
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .skills h3 { margin: 0 0 8px; font-size: 1rem; }
+  .skills ul { margin: 0; padding-left: 18px; }
+  .empty { padding: 16px; text-align: center; color: var(--muted); }
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: var(--bg); padding: 8px 14px; border-radius: 6px;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+  @media (max-width: 600px) { .profile { grid-template-columns: 1fr; } nav { width: 100%; } }
+  @media print {
+    header, .tools, .no-print { display: none !important; }
+    body { background: #fff; color: #000; }
+    .card { border-color: #ccc; break-inside: avoid; }
+    section { margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <strong>김한별</strong>
+    <nav id="nav">
+      <a href="#about">소개</a>
+      <a href="#certs">자격증</a>
+      <a href="#skills">역량</a>
+      <a href="#experience">경험</a>
+      <a href="#contact">연락처</a>
+    </nav>
+    <button id="themeBtn" title="다크 모드 전환">🌓</button>
+    <button id="printBtn" title="인쇄 / PDF로 저장">PDF 저장</button>
+  </div>
+</header>
+
+<main>
+  <!-- 소개 -->
+  <section id="about">
+    <div class="card profile">
+      <div>
+        <h1 id="pName"></h1>
+        <div class="muted" id="pInfo"></div>
+        <div id="intro"></div>
+      </div>
+      <button class="no-print" data-copy="email">이메일 복사</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- 자격증 -->
+  <section id="certs">
+    <h2>자격증</h2>
+    <div class="tools">
+      <input id="certSearch" type="search" placeholder="자격증명 / 발급기관 검색">
+      <div id="certFilters" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="name">자격증명 ↕</th>
+            <th data-sort="category">분야 ↕</th>
+            <th data-sort="issuer">발급기관 ↕</th>
+            <th data-sort="date">취득일 ↕</th>
+          </tr>
+        </thead>
+        <tbody id="certBody"></tbody>
+      </table>
+    </div>
+    <div class="muted" id="certCount" style="margin-top:6px; font-size:.85rem;"></div>
+  </section>
+
+  <!-- 역량 -->
+  <section id="skills">
+    <h2>핵심 역량</h2>
+    <div class="skills" id="skillList"></div>
+  </section>
+
+  <!-- 경험 -->
+  <section id="experience">
+    <h2>경험</h2>
+    <div class="tools">
+      <div id="expFilters" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+    </div>
+    <ul class="timeline" id="expList"></ul>
+  </section>
+
+  <!-- 연락처 -->
+  <section id="contact">
+    <h2>연락처</h2>
+    <div class="card" id="contactBox"></div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+/* ===========================================================
+   여기 DATA만 수정하면 페이지 전체가 갱신됩니다.
+   date는 "YYYY-MM-DD" 형식으로 입력하세요. (비워두면 "—" 표시)
+   =========================================================== */
+const DATA = {
+  profile: {
+    name: "김한별",
+    age: 23,
+    birth: "2004.02.03",
+    school: "순천향대학교 회계학과 4학년"
+  },
+  // 소개글: 문단 하나당 문자열 하나
+  intro: [
+    "정확한 회계 역량 위에 AI 활용 능력을 더한 회계인, 김한별입니다.",
+    "재경관리사·전산세무 2급 등 회계·세무 자격증 8개를 취득하며 실무 기초를 다졌고, 아르바이트에서 매일 시재를 맞추며 정확성과 책임감을 길렀습니다.",
+    "학과 동아리 스카스에서 함께 회계 문제를 풀며 협업을 배웠고, 바이브코딩 동아리 SCORE에서 AI로 업무를 효율화하는 방법을 익히고 있습니다."
+  ],
+  contact: {
+    email: "khb04023@gmail.com",
+    phone: "",   // 예: "010-0000-0000"
+    github: ""   // 예: "https://github.com/아이디"
+  },
+  certs: [
+    { name: "재경관리사",              category: "회계/재무", issuer: "삼일회계법인",   date: "2026-07-31" },
+    { name: "전산세무 2급",            category: "세무",      issuer: "한국세무사회",   date: "2026-02-26" },
+    { name: "컴퓨터활용능력 2급",      category: "IT/OA",     issuer: "대한상공회의소", date: "2022-04-22" },
+    { name: "ERP 정보관리사 회계 2급", category: "ERP",       issuer: "한국생산성본부", date: "2021-08-10" },
+    { name: "전산회계운용사 2급",      category: "회계/재무", issuer: "대한상공회의소", date: "2021-03-19" },
+    { name: "ITQ 한글엑셀(한셀) A등급",       category: "IT/OA", issuer: "한국생산성본부", date: "2020-10-29" },
+    { name: "ITQ 한글파워포인트(한쇼) A등급", category: "IT/OA", issuer: "한국생산성본부", date: "2020-07-30" },
+    { name: "ITQ 아래한글 A등급",             category: "IT/OA", issuer: "한국생산성본부", date: "2020-06-11" }
+  ],
+  skills: [
+    { title: "회계·재무", items: ["재무회계 / 원가관리회계 이해", "결산 및 재무제표 작성 흐름 이해", "전산회계 프로그램을 이용한 전표 처리"] },
+    { title: "세무",      items: ["부가가치세 신고 실무", "원천징수 및 연말정산 기초", "KcLep 기반 세무 실무"] },
+    { title: "ERP·IT",    items: ["ERP 회계 모듈 운용", "엑셀 함수·데이터 정리 (컴활 2급)", "한글·한셀·한쇼 문서 작성 (ITQ 3과목 A등급)"] },
+    { title: "AI 활용",   items: ["AI에게 요구사항을 정확히 설명하는 프롬프트 작성", "바이브코딩으로 웹페이지 제작 (본 포트폴리오)", "AI 결과물을 회계 지식으로 검증하는 습관", "반복 업무 자동화에 대한 관심과 학습"] },
+    { title: "직무 태도", items: ["매장 정산·재고 관리 경험에서 얻은 정확성", "고객 응대를 통한 커뮤니케이션", "교대 근무 속 책임감과 팀워크"] }
+  ],
+  experience: [
+    {
+      type: "교내외 활동", title: "바이브코딩 동아리 SCORE", role: "동아리원 (활동 중)",
+      period: "",
+      points: ["코딩 비전공자로서 AI 도구를 활용한 바이브코딩 학습", "기획 → AI에게 요구사항 전달 → 결과 확인 → 수정 과정을 반복하며 결과물 완성", "이 포트폴리오 웹페이지를 직접 기획·제작 (자격증 검색·필터·정렬, PDF 저장 기능 포함)", "회계 업무에 AI와 자동화를 적용하는 방법 탐색"]
+    },
+    {
+      type: "교내외 활동", title: "회계학과 동아리 스카스", role: "학습 부원",
+      period: "",
+      points: ["배우는 입장으로 참여해 선배·동기들과 회계 문제를 함께 풀이", "풀이 과정을 서로 설명하고 의논하며 개념을 정확히 이해", "다양한 관점의 풀이를 비교하며 문제 해결력과 협업 능력 향상"]
+    },
+    {
+      type: "봉사활동", title: "청다움 6호점 (청소년 카페)", role: "봉사자",
+      period: "",
+      points: ["지역 청소년들에게 무료 음료 제공", "카페 이용 안내 및 청소년 응대", "매장 청소 및 설거지 등 운영 지원"]
+    },
+    {
+      type: "봉사활동", title: "아름다운가게", role: "봉사자",
+      period: "",
+      points: ["기부 물품 분류 및 매장 정리 등 운영 지원", "나눔과 재사용 문화를 실천하는 활동에 참여"]
+    },
+    {
+      type: "아르바이트", title: "맥도날드", role: "크루",
+      period: "",
+      points: ["피크 타임 주문 처리 및 고객 응대", "매뉴얼 기반 위생·품질 관리", "팀 단위 포지션 협업"]
+    },
+    {
+      type: "아르바이트", title: "CU 편의점", role: "판매 아르바이트",
+      period: "",
+      points: ["POS 계산 및 근무 교대 시 시재 정산", "상품 입고·검수 및 진열, 유통기한 관리", "고객 응대"]
+    }
+  ]
+};
+
+/* ---------- 유틸 ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const fmtDate = d => d ? d.replaceAll("-", ".") : "—";
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 1500);
+}
+function makeFilters(container, values, onChange) {
+  const all = ["전체", ...values];
+  container.innerHTML = all.map((v, i) => `<button class="${i === 0 ? "on" : ""}" data-v="${esc(v)}">${esc(v)}</button>`).join("");
+  container.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    container.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+    onChange(b.dataset.v);
+  });
+}
+
+/* ---------- 소개 / 통계 ---------- */
+const P = DATA.profile;
+$("#pName").textContent = P.name;
+$("#pInfo").textContent = `${P.school} · ${P.age}세 · ${P.birth}`;
+$("#intro").innerHTML = DATA.intro.map((t, i) =>
+  i === 0 ? `<p style="font-weight:600; font-size:1.05rem;">${esc(t)}</p>` : `<p>${esc(t)}</p>`
+).join("");
+const alba = DATA.experience.filter(e => e.type === "아르바이트").length;
+const club = DATA.experience.filter(e => e.type === "교내외 활동").length;
+const vol = DATA.experience.filter(e => e.type === "봉사활동").length;
+$("#stats").innerHTML = [
+  ["보유 자격증", DATA.certs.length + "개"],
+  ["아르바이트", alba + "곳"],
+  ["교내외 활동", club + "건"],
+  ["봉사활동", vol + "곳"],
+  ["학년", "4학년"]
+].map(([k, v]) => `<div class="stat"><b>${v}</b>${k}</div>`).join("");
+
+/* ---------- 자격증: 검색 + 분야 필터 + 정렬 ---------- */
+const certState = { q: "", cat: "전체", sort: "date", asc: false }; // 기본: 최신 취득순
+function renderCerts() {
+  let rows = DATA.certs.filter(c =>
+    (certState.cat === "전체" || c.category === certState.cat) &&
+    (c.name + c.issuer).toLowerCase().includes(certState.q.toLowerCase())
+  );
+  if (certState.sort) {
+    const k = certState.sort;
+    rows = [...rows].sort((a, b) => (a[k] || "").localeCompare(b[k] || "", "ko") * (certState.asc ? 1 : -1));
+  }
+  $("#certBody").innerHTML = rows.length
+    ? rows.map(c => `<tr><td>${esc(c.name)}</td><td><span class="tag">${esc(c.category)}</span></td><td>${esc(c.issuer)}</td><td>${fmtDate(c.date)}</td></tr>`).join("")
+    : `<tr><td colspan="4" class="empty">검색 결과가 없습니다.</td></tr>`;
+  $("#certCount").textContent = `${rows.length} / ${DATA.certs.length}개 표시`;
+}
+$("#certSearch").addEventListener("input", e => { certState.q = e.target.value; renderCerts(); });
+makeFilters($("#certFilters"), [...new Set(DATA.certs.map(c => c.category))], v => { certState.cat = v; renderCerts(); });
+document.querySelectorAll("th[data-sort]").forEach(th => th.addEventListener("click", () => {
+  const k = th.dataset.sort;
+  certState.asc = certState.sort === k ? !certState.asc : true;
+  certState.sort = k; renderCerts();
+}));
+renderCerts();
+
+/* ---------- 역량 ---------- */
+$("#skillList").innerHTML = DATA.skills.map(s =>
+  `<div class="card"><h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`
+).join("");
+
+/* ---------- 경험: 유형 필터 ---------- */
+function renderExp(type) {
+  $("#expList").innerHTML = DATA.experience
+    .filter(e => type === "전체" || e.type === type)
+    .map(e => `<li class="card">
+      <span class="tag">${esc(e.type)}</span>
+      <h3>${esc(e.title)} <span class="muted" style="font-weight:400; font-size:.9rem;">· ${esc(e.role)}</span></h3>
+      <div class="muted" style="font-size:.85rem;">${e.period ? esc(e.period) : "기간 미입력"}</div>
+      <ul>${e.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+    </li>`).join("");
+}
+makeFilters($("#expFilters"), [...new Set(DATA.experience.map(e => e.type))], renderExp);
+renderExp("전체");
+
+/* ---------- 연락처 + 복사 ---------- */
+const c = DATA.contact;
+$("#contactBox").innerHTML = [
+  ["이메일", c.email, "email"],
+  ["전화", c.phone, "phone"],
+  ["GitHub", c.github, "github"]
+].filter(([, v]) => v).map(([k, v, key]) =>
+  `<div style="display:flex; gap:10px; align-items:center; padding:6px 0; flex-wrap:wrap;">
+     <span class="muted" style="width:70px;">${k}</span><span>${esc(v)}</span>
+     <button class="no-print" data-copy="${key}">복사</button>
+   </div>`
+).join("");
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const val = DATA.contact[b.dataset.copy];
+  try { await navigator.clipboard.writeText(val); toast("복사되었습니다: " + val); }
+  catch { toast(val); }
+});
+
+/* ---------- 현재 섹션 하이라이트 ---------- */
+const links = [...document.querySelectorAll("#nav a")];
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+  });
+}, { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("main section").forEach(s => io.observe(s));
+
+/* ---------- 다크 모드 (설정 기억) / 인쇄 ---------- */
+try { if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark"; } catch {}
+$("#themeBtn").addEventListener("click", () => {
+  const dark = document.documentElement.dataset.theme !== "dark";
+  document.documentElement.dataset.theme = dark ? "dark" : "";
+  try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+});
+$("#printBtn").addEventListener("click", () => window.print());
+</script>
+</body>
+</html>
